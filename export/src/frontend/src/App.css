@@ -1,0 +1,13 @@
+/* Custom styles for AfroFreight */
+
+/* Remove default App styles */
+.App {
+    min-height: 100vh;
+}
+
+/* Sonner toast customization */
+[data-sonner-toaster] {
+    --normal-bg: hsl(var(--card));
+    --normal-border: hsl(var(--border));
+    --normal-text: hsl(var(--foreground));
+}
