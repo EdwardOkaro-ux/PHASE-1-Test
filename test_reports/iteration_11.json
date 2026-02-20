@@ -1,0 +1,91 @@
+{
+  "summary": "Tested and verified 4 critical invoice bug fixes. Backend fix applied: /api/clients/{id}/rate endpoint now correctly handles date comparison and supports both rate_value and rate_per_kg field names for backward compatibility. All 10 backend tests passed. Frontend UI tested with Playwright - all bug fixes confirmed working.",
+  
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  
+  "test_report_links": [
+    "/app/backend/tests/test_invoice_bugs.py",
+    "/app/test_reports/pytest/invoice_bugs_results.xml"
+  ],
+  
+  "action_items": [],
+  
+  "critical_code_review_comments": [],
+  
+  "updated_files": [
+    "/app/backend/server.py - Fixed /api/clients/{id}/rate endpoint to handle ISO timestamp date comparison and support both rate_value and rate_per_kg field names",
+    "/app/backend/server.py - Fixed /api/trips/{id}/parcels-for-invoice to support both rate_value and rate_per_kg field names",
+    "/app/backend/tests/test_invoice_bugs.py - Created 10 tests for invoice bug fixes"
+  ],
+  
+  "success_rate": {
+    "backend": "100% (10/10 passed)",
+    "frontend": "100%"
+  },
+  
+  "bug_fixes_verified": {
+    "BUG_1_LINE_ITEMS_FROM_TRIP": {
+      "status": "FIXED",
+      "evidence": "Parcels dialog shows correct data: MTN South Africa parcel with 45kg weight, R36/kg rate, R1,620 amount",
+      "test": "test_parcels_for_invoice_returns_data PASSED"
+    },
+    "BUG_2_CLIENT_DEFAULT_RATE": {
+      "status": "FIXED", 
+      "evidence": "GET /api/clients/client-1/rate returns rate_per_kg: 36",
+      "backend_fix": "Updated endpoint to handle ISO timestamp date comparison and support both rate_value and rate_per_kg field names",
+      "test": "test_client_rate_endpoint_returns_rate PASSED"
+    },
+    "BUG_3_TOTAL_CALCULATION": {
+      "status": "FIXED",
+      "evidence": "Line item amount = weight × rate (45kg × R36 = R1,620) shown in parcels dialog",
+      "test": "test_line_item_amount_calculation PASSED, test_subtotal_is_sum_of_line_items PASSED, test_total_with_adjustments PASSED"
+    },
+    "BUG_4_CURRENCY_TOGGLE_COMPOUNDING": {
+      "status": "FIXED",
+      "evidence": "Currency toggle ZAR→KES→ZAR produces consistent values (no compounding). Toggle 5 times produces expected results.",
+      "test": "test_currency_conversion_display_only PASSED"
+    }
+  },
+  
+  "backend_fix_details": {
+    "file": "/app/backend/server.py",
+    "endpoint": "GET /api/clients/{client_id}/rate",
+    "issue": "String date comparison failing for ISO timestamps (2026-02-14T16:38:24 > 2026-02-14)",
+    "fix": "Extract first 10 chars of effective_from for date-only comparison, support both rate_per_kg and rate_value field names"
+  },
+  
+  "seed_data_creation": "Created temporary test parcel (ship-test-mtn-s28) for MTN South Africa on trip S28 - cleaned up after testing",
+  
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  
+  "context_for_next_testing_agent": "Invoice bug fixes verified. Session token demo_trips_session_1771084342772 for demo-tenant-123. Test client: client-1 (MTN South Africa) has rate R36/kg in client_rates table. The client_rates table has mixed field names: some records use rate_per_kg, others use rate_value - backend now supports both.",
+  
+  "exchange_rate_verified": {
+    "ZAR_to_KES": 6.67,
+    "toggle_consistency": "R1,620 ↔ KES10,805.40 - no compounding"
+  },
+  
+  "passed_tests": [
+    "Backend: GET /api/clients/{id}/rate returns rate_per_kg=36 for MTN South Africa",
+    "Backend: Rate endpoint handles ISO timestamp effective_from dates",
+    "Backend: GET /api/trips/{id}/parcels-for-invoice returns parcels with default_rate",
+    "Backend: Line item amount = weight × rate (45 × 36 = 1620)",
+    "Backend: Subtotal = sum of line items",
+    "Backend: Total = subtotal + adjustments",
+    "Backend: Invoice stores values in ZAR base currency",
+    "Backend: Currency conversion is display-only",
+    "Backend: Invoice finalize changes status to sent",
+    "Frontend: Parcels dialog shows MTN parcel with R36,00/kg and R1,620.00",
+    "Frontend: Currency toggle ZAR↔KES switches display without compounding"
+  ]
+}

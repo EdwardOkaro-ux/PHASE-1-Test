@@ -1,0 +1,85 @@
+{
+  "summary": "Comprehensive testing of Servex Holdings bug fixes - iteration 28. All 11 backend tests pass. Fixed trip worksheet PDF generation bug. UI verified working including Loading page parcel filtering, Invoice number display, Client form with new fields (VAT, physical/billing address), Invoice PDF download, and Trip worksheet export.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Finance > Invoice Details",
+        "issues": ["Console warning: 'Each child in a list should have a unique key prop' in TableBody/Finance - cosmetic issue only, doesn't affect functionality"]
+      }
+    ]
+  },
+  "passed_tests": [
+    "Backend: Login with admin@servex.com / Servex2026! - PASS",
+    "Backend: GET /api/shipments?trip_id={id} returns only shipments for that trip - PASS",
+    "Backend: GET /api/shipments?trip_id={id}&status=staged filters correctly - PASS",
+    "Backend: Shipments have invoice_number field in response (enriched from invoice_line_items) - PASS",
+    "Backend: POST /api/invoices creates invoice with client_name_snapshot, client_address_snapshot, client_vat_snapshot - PASS",
+    "Backend: GET /api/invoices/{id}/pdf returns PDF with content-type application/pdf - PASS",
+    "Backend: DELETE /api/invoices/{id} deletes draft invoice successfully - PASS",
+    "Backend: GET /api/finance/trip-worksheet/{trip_id}/pdf returns PDF worksheet - PASS (after fix)",
+    "Backend: POST /api/clients accepts vat_number, physical_address, billing_address fields - PASS",
+    "Backend: PUT /api/clients/{id} updates vat_number, physical_address, billing_address - PASS",
+    "Backend: Shipment schema includes parcel_sequence, total_in_sequence fields - PASS",
+    "Frontend: Loading page has Trip selector and Warehouse selector - PASS",
+    "Frontend: Clients page Add Client form has VAT Number, Physical Address, Billing Address fields - PASS",
+    "Frontend: Trip detail page has Download Summary option in Actions menu - PASS",
+    "Frontend: Finance > Invoice Details shows invoice numbers in INV-YYYY-NNNN format - PASS",
+    "Frontend: Invoice detail shows Download PDF button - PASS",
+    "Frontend: Invoice line items use R36/kg default rate - PASS"
+  ],
+  "bugs_fixed_by_testing_agent": [
+    {
+      "bug": "Trip worksheet PDF endpoint returns 500 - KeyError: Style 'Title' already defined in stylesheet",
+      "root_cause": "getSampleStyleSheet() already includes a 'Title' style, causing conflict when trying to add a style with the same name",
+      "fix": "Changed style names from 'Title', 'Subtitle', 'SectionTitle' to 'WorksheetTitle', 'WorksheetSubtitle', 'WorksheetSectionTitle' to avoid conflicts",
+      "file_modified": "/app/backend/routes/finance_routes.py"
+    }
+  ],
+  "test_report_links": [
+    "/app/backend/tests/test_bug_fixes_iter28.py",
+    "/app/test_reports/pytest/bug_fixes_iter28_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Finance > Invoice Details has a key prop warning - consider adding unique keys to TableBody children",
+    "Invoice delete option not visible in UI for draft invoices - backend DELETE endpoint works but UI may need a delete button in invoice detail view"
+  ],
+  "updated_files": [
+    "/app/backend/routes/finance_routes.py",
+    "/app/backend/tests/test_bug_fixes_iter28.py"
+  ],
+  "success_rate": {
+    "backend": "100% (11/11 tests passed)",
+    "frontend": "100% - all UI components verified working"
+  },
+  "test_credentials": {
+    "email": "admin@servex.com",
+    "password": "Servex2026!"
+  },
+  "seed_data_creation": "Test client and invoices created and cleaned up during testing",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "All bug fixes from iteration 28 verified: 1) Loading page parcel filtering by trip_id works correctly, 2) Invoice number enrichment in shipments endpoint works, 3) Invoice creation stores client snapshot fields, 4) Invoice PDF download works, 5) Invoice delete for drafts works via API, 6) Trip worksheet PDF export fixed and working, 7) Client form has new fields (vat_number, physical_address, billing_address), 8) Shipment schema has sequence fields.",
+  "feature_verification": {
+    "loading_page_trip_filter": "Shipments endpoint correctly filters by trip_id, UI has trip selector",
+    "invoice_number_display": "Shipments enriched with invoice_number from invoice_line_items join",
+    "invoice_client_snapshot": "client_name_snapshot, client_address_snapshot, client_vat_snapshot stored on invoice creation",
+    "invoice_pdf_download": "GET /api/invoices/{id}/pdf returns valid PDF",
+    "invoice_delete_draft": "DELETE /api/invoices/{id} works for draft invoices",
+    "trip_worksheet_pdf": "GET /api/finance/trip-worksheet/{trip_id}/pdf returns valid PDF (fixed style naming conflict)",
+    "client_new_fields": "vat_number, physical_address, billing_address fields work in create and update",
+    "shipment_sequence_fields": "parcel_sequence, total_in_sequence fields in Shipment schema"
+  },
+  "data_status": {
+    "total_clients": 52,
+    "total_shipments": 848,
+    "active_trips": 3,
+    "invoices_visible": "INV-2026-0001, INV-2026-0002, INV-2026-0003 (all Draft status)"
+  }
+}

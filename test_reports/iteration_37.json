@@ -1,0 +1,85 @@
+{
+  "summary": "Tested new Logistics SaaS features: 1) Barcode scanner with partial parcel ID support in Loading page, 2) Destination warehouse selection in Trip creation, 3) Warehouse collection scanner for parcel collection, 4) Verified old toggles removed from Loading page. All 14 backend tests passed, all UI features verified working.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_new_features_iter37.py",
+    "/app/test_reports/pytest/new_features_iter37_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "100% (14/14 passed)",
+    "frontend": "100%"
+  },
+  "test_credentials": {
+    "email": "admin@servex.com",
+    "password": "Servex2026!"
+  },
+  "seed_data_creation": "None - used existing data with various parcel statuses (staged, loaded, arrived, collected)",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "New features verified: 1) Barcode scanner supports partial parcel IDs (first 8 chars, case-insensitive) in both Loading page and Warehouse collection, 2) Trip creation has Destination Warehouse dropdown with Johannesburg and Nairobi options, 3) Warehouse page has purple Collection Scanner section that only accepts 'arrived' parcels, 4) Old toggles (Transit/Arrived, Staging/Truck) are removed from Loading page.",
+  "features_tested": {
+    "barcode_scanner_partial_id": {
+      "status": "PASS",
+      "details": "Backend API /api/pieces/scan/{barcode} supports full parcel ID, partial ID (first 8 chars), and case-insensitive matching. Frontend Loading page barcode input enabled after trip selection."
+    },
+    "trip_destination_warehouse": {
+      "status": "PASS",
+      "details": "Trip creation dialog shows 'Destination Warehouse' dropdown with options: No destination (All Warehouses), Johannesburg Warehouse, Nairobi Warehouse. API supports creating/updating trips with destination_warehouse_id."
+    },
+    "warehouse_collection_scanner": {
+      "status": "PASS",
+      "details": "Purple highlighted section 'Scan Parcel for Collection' with input field and scan button. Only accepts parcels with 'arrived' status. Error message shown for non-arrived parcels."
+    },
+    "loading_page_toggles_removed": {
+      "status": "PASS",
+      "details": "No 'Transit/Arrived' or 'Staging/Truck' toggles found on Loading page. Page shows only Loading/Unloading mode tabs."
+    }
+  },
+  "backend_tests_summary": {
+    "test_file": "/app/backend/tests/test_new_features_iter37.py",
+    "tests_passed": 14,
+    "tests_failed": 0,
+    "test_classes": [
+      "TestBarcodeScanPartialParcelId (4 tests) - Full ID scan, partial ID (8 chars), lowercase partial ID, invalid barcode 404",
+      "TestTripDestinationWarehouse (3 tests) - Create trip with destination warehouse, without destination warehouse, update destination warehouse",
+      "TestWarehouseCollectionScanner (5 tests) - Full ID collection, partial ID collection, non-arrived parcel rejection, invalid ID 404, empty barcode 400",
+      "TestBulkStatusUpdateWithArrived (1 test) - Trip with destination warehouse creation",
+      "TestLoadingPageBarcodeScan (1 test) - Pieces scan endpoint returns shipment and piece"
+    ]
+  },
+  "ui_verification": {
+    "loading_page": {
+      "trip_dropdown": "Working - shows trips like 'S5 - Mombasa → Pretoria (planning)'",
+      "barcode_input": "Working - enabled after trip selection, placeholder 'Scan barcode or enter parcel ID...'",
+      "staging_area": "Working - shows parcels with ID, Client, Description, Weight, Invoice columns",
+      "on_truck_section": "Working - shows loaded parcels",
+      "statistics": "Working - shows In Staging count/weight, On Truck count/weight, Total for Trip",
+      "toggles_removed": "Verified - no Transit/Arrived or Staging/Truck toggles present"
+    },
+    "trips_page": {
+      "create_trip_dialog": "Working - shows all fields including Destination Warehouse dropdown",
+      "destination_warehouse_options": ["No destination (All Warehouses)", "Johannesburg Warehouse (Johannesburg, South Africa)", "Nairobi Warehouse (Nairobi, Kenya)"]
+    },
+    "warehouse_page": {
+      "collection_scanner": "Working - purple highlighted section with input and scan button",
+      "collection_help_text": "Shows: 'Only parcels with \"Arrived\" status can be collected. Collected parcels are removed from warehouse inventory.'"
+    }
+  },
+  "api_endpoints_tested": [
+    "GET /api/pieces/scan/{barcode} - Full ID, partial ID (8 chars), lowercase, invalid",
+    "POST /api/trips - Create with destination_warehouse_id",
+    "PUT /api/trips/{id} - Update destination_warehouse_id",
+    "POST /api/warehouse/scan-collect - Collection with full/partial ID, error handling"
+  ]
+}

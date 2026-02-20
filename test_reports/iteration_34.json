@@ -1,0 +1,82 @@
+{
+  "summary": "Tested invoice workflow bug fixes: +Add Item button removal, Add from Warehouse showing 500 parcels, deleted parcels appearing in Add from Trip, warehouse highlight auto-open, and PATCH endpoint for clearing invoice_id. All 7 backend tests pass, all UI features verified working.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Invoice Editor",
+        "issues": ["'You have unsaved changes' indicator shows after deleting a parcel - expected behavior since form state changed, but indicator persists even during parcel operations"]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_invoice_workflow_bugs.py",
+    "/app/test_reports/pytest/invoice_workflow_bugs_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [
+    "/app/backend/tests/test_invoice_workflow_bugs.py"
+  ],
+  "success_rate": {
+    "backend": "100% (7/7 tests passed)",
+    "frontend": "100%"
+  },
+  "test_credentials": {
+    "email": "admin@servex.com",
+    "password": "Servex2026!"
+  },
+  "seed_data_creation": "Used existing invoice INV-2026-001 with 3 line items for testing",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All bug fixes verified working. Invoice line items now only has 'Add from Trip' and 'Add from Warehouse' buttons (no +Add Item). Add from Warehouse shows 500 parcels with search and client filters. Deleting a parcel from invoice clears its invoice_id via PATCH endpoint and makes it available in Add from Trip. Warehouse page accepts ?highlight=PARCEL_ID and auto-opens parcel detail modal.",
+  "features_tested": {
+    "remove_add_item_button": {
+      "status": "PASS",
+      "details": "Invoice line items section only shows 'Add from Trip' (when trip selected) and 'Add from Warehouse' buttons. No +Add Item button present."
+    },
+    "add_from_warehouse_shows_parcels": {
+      "status": "PASS",
+      "details": "Add from Warehouse dialog shows 500 parcels with search input, client filter dropdown, and selection capability."
+    },
+    "deleted_parcel_appears_in_add_from_trip": {
+      "status": "PASS",
+      "details": "After deleting 'Metal Stand' from invoice, it appeared in Add from Trip dialog with its previous invoice badge visible."
+    },
+    "backend_patch_clears_invoice_id": {
+      "status": "PASS",
+      "details": "PATCH /api/shipments/{id} with invoice_id: null successfully clears the invoice linkage."
+    },
+    "not_invoiced_filter": {
+      "status": "PASS",
+      "details": "GET /api/shipments with not_invoiced=true correctly returns only parcels without invoice_id."
+    },
+    "warehouse_highlight_param": {
+      "status": "PASS",
+      "details": "Navigating to /warehouse?highlight=PARCEL_ID auto-opens the parcel detail modal for that parcel."
+    },
+    "unsaved_changes_dialog": {
+      "status": "PASS",
+      "details": "No unsaved changes warning dialog appeared during parcel operations (delete). The isProcessingParcels flag prevents the blocking dialog, though the indicator text still shows."
+    }
+  },
+  "backend_tests_summary": {
+    "test_file": "/app/backend/tests/test_invoice_workflow_bugs.py",
+    "tests_passed": 7,
+    "tests_failed": 0,
+    "test_list": [
+      "TestShipmentEndpoints::test_list_shipments_not_invoiced_filter",
+      "TestShipmentEndpoints::test_patch_shipment_clear_invoice_id",
+      "TestShipmentEndpoints::test_get_shipment_detail",
+      "TestInvoiceEndpoints::test_list_invoices",
+      "TestInvoiceEndpoints::test_trip_parcels_endpoint",
+      "TestWarehouseEndpoints::test_warehouse_parcels_list",
+      "TestWarehouseEndpoints::test_warehouse_parcel_detail"
+    ]
+  }
+}

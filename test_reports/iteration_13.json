@@ -1,0 +1,123 @@
+{
+  "summary": "Parcel Intake (Table View) Excel-style page frontend testing. Fixed 2 critical bugs: 1) destination field must be string not null - set default 'TBD', 2) piece API needs piece_number field and length_cm/width_cm/height_cm field names. All 10 test scenarios passed after fixes.",
+
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Parcel Intake", "issues": ["Console warning: '<tr> cannot be child of <span>' - React hydration issue with table mapping"]}
+    ]
+  },
+
+  "test_report_links": [
+    "/app/frontend/src/pages/ParcelIntake.jsx"
+  ],
+
+  "action_items": [],
+
+  "critical_code_review_comments": [
+    "Console warning: 'In HTML, <tr> cannot be a child of <span>' - This is a React hydration warning that doesn't affect functionality but should be cleaned up eventually"
+  ],
+
+  "updated_files": [
+    "/app/frontend/src/pages/ParcelIntake.jsx - Fixed 3 issues: 1) destination default from null to 'TBD', 2) piece payload uses piece_number and length_cm/width_cm/height_cm, 3) Error handling for Pydantic validation errors"
+  ],
+
+  "success_rate": {
+    "backend": "N/A (frontend-only testing)",
+    "frontend": "100% (10/10 tests passed)"
+  },
+
+  "test_credentials": "Session token: demo_trips_session_1771084342772",
+  
+  "seed_data_creation": "5 test parcels created and saved to database during testing",
+
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+
+  "context_for_next_testing_agent": "Parcel Intake Excel-style page is fully functional. Route is /parcels/intake. Uses session cookie auth. All data-testid attributes working. Key APIs: POST /api/shipments, POST /api/shipments/{id}/pieces.",
+
+  "features_verified": {
+    "1_TAB_NAVIGATION_FLOW": {
+      "status": "PASS",
+      "evidence": "Tab flow: Description → qty-0 → length-0 → width-0 → height-0 → Next row description. User never touches mouse."
+    },
+    "2_AUTO_CALCULATIONS": {
+      "status": "PASS",
+      "evidence": "Vol = L × W × H (30×20×10 = 6,000 cm³), CBM = Vol ÷ 1,000,000 (0.006). Shows 3 decimal places."
+    },
+    "3_AUTO_ADD_ROW": {
+      "status": "PASS",
+      "evidence": "Tab from last row's Height field → new row added automatically (3→4 rows). Focus moves to new row's Description."
+    },
+    "4_ACTION_MENU": {
+      "status": "PASS",
+      "evidence": "Each row has ⋮ menu with: Preview Barcode, Preview Label, Upload Photos, Upload Documents, Delete Row"
+    },
+    "5_CAMERA_ICON": {
+      "status": "PASS",
+      "evidence": "📷 camera icon exists in dedicated column for photo uploads (data-testid='camera-{index}')"
+    },
+    "6_CLIENT_DROPDOWN": {
+      "status": "PASS",
+      "evidence": "Populates with 6 clients from API. Searchable - typing 'MTN' filters to 1 result."
+    },
+    "7_TRIP_DROPDOWN": {
+      "status": "PASS",
+      "evidence": "Populates with 5 active trips (excludes closed/delivered). Shows route info."
+    },
+    "8_SAVE_ALL_BEHAVIOR": {
+      "status": "PASS",
+      "evidence": "Creates all parcels in batch. Shows toast '✓ 3 parcel(s) created' or '✓ 2 parcel(s) created and assigned to Trip S29'. After save: Client/Trip stays populated, Table rows CLEAR."
+    },
+    "9_KEYBOARD_SHORTCUT": {
+      "status": "PASS",
+      "evidence": "Ctrl+S triggers Save All. Toast: '✓ 2 parcel(s) created and assigned to Trip S29'"
+    },
+    "10_BULK_KEYBOARD_ENTRY": {
+      "status": "PASS",
+      "evidence": "Entered 5 parcels using ONLY keyboard with dimensions. All auto-calculated Vol and CBM correctly."
+    }
+  },
+
+  "bugs_fixed_during_testing": {
+    "bug_1": {
+      "issue": "Save failed with Pydantic validation error: 'destination: Input should be a valid string'",
+      "cause": "Frontend sent null for destination when no trip selected",
+      "fix": "Changed default from null to 'TBD'"
+    },
+    "bug_2": {
+      "issue": "Piece creation failed with validation error",
+      "cause": "Frontend sent 'length/width/height' but API expects 'length_cm/width_cm/height_cm' and requires 'piece_number'",
+      "fix": "Updated payload field names and added piece_number: 1"
+    },
+    "bug_3": {
+      "issue": "React error 'Objects are not valid as React child' when API returned validation error",
+      "cause": "toast.error() received object instead of string",
+      "fix": "Added error handling to extract message from Pydantic validation errors"
+    }
+  },
+
+  "passed_tests": [
+    "Page loads with data-testid='parcel-intake-page'",
+    "Client dropdown searchable, populates from /api/clients",
+    "Trip dropdown shows active trips from /api/trips",
+    "Tab navigation: Description → Qty → L → W → H → Next row",
+    "Auto-calculate Vol (L×W×H) and CBM (Vol/1000000)",
+    "Auto-add row when Tab from last row's Height field",
+    "Add Row button creates new row",
+    "Delete Row removes row correctly",
+    "Action menu has all required items",
+    "Save All creates shipments and pieces via API",
+    "Ctrl+S keyboard shortcut triggers save",
+    "Success toast shows parcel count and trip assignment",
+    "After save: Client/Trip persist, Table clears",
+    "Barcode Preview dialog with TEMP-XXXXXXXX format",
+    "Label Preview dialog with From/To/Description/Dimensions"
+  ]
+}

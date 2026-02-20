@@ -1,0 +1,85 @@
+{
+  "summary": "Verified bug fix for Parcel Intake page - shipment creation now works correctly after adding missing imports (create_audit_log, AuditAction) in shipment_routes.py. All 4 original bugs confirmed fixed: save success message, no duplicates, multiple parcels save correctly, photo upload works.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "ParcelIntake.jsx",
+        "issues": ["Console hydration warnings: '<tr> cannot be a child of <span>' and '<span> cannot be a child of <tbody>' - minor React table structure issue that doesn't affect functionality"]
+      }
+    ]
+  },
+  "passed_tests": [
+    "Backend: POST /api/shipments returns 200 (was failing with NameError for create_audit_log)",
+    "Backend: Audit log is created when shipment is created (verified in database)",
+    "Backend: Creating 3 shipments in sequence produces 3 unique IDs (no duplicates)",
+    "Backend: POST /api/shipments/{id}/pieces creates piece with barcode",
+    "Backend: POST /api/warehouse/parcels/{id}/photos uploads and stores photo as base64 data URL",
+    "Backend: Photo appears in /api/warehouse/parcels/{id} detail response",
+    "Backend: Full parcel intake flow - create 2 parcels, verify both in warehouse",
+    "Frontend: Login works with admin@servex.com / Servex2026!",
+    "Frontend: Parcel Intake page loads at /parcels/intake",
+    "Frontend: Client dropdown works - can select client",
+    "Frontend: Can fill parcel description and weight fields",
+    "Frontend: Save All button shows correct parcel count",
+    "Frontend: After save, form resets to empty (parcels were saved)",
+    "UI Test: Created 2 parcels via UI, both appeared in warehouse API"
+  ],
+  "bugs_verified_fixed": [
+    {
+      "bug": "UI shows 'failed to save' error but parcel is actually saved",
+      "status": "FIXED",
+      "verification": "Save now returns 200 and toast shows success message"
+    },
+    {
+      "bug": "Repeatedly attempting to save creates duplicate parcel entries",
+      "status": "FIXED",
+      "verification": "Row is marked as 'saved:true' after successful save, preventing duplicate saves"
+    },
+    {
+      "bug": "When adding multiple parcels at once, only the first one is saved",
+      "status": "FIXED",
+      "verification": "Created 2 parcels via UI and 3 via API - all saved correctly with unique IDs"
+    },
+    {
+      "bug": "Images uploaded with parcels are not displaying in warehouse view",
+      "status": "FIXED",
+      "verification": "Photo upload API stores base64 data URL in piece.photo_url, appears in warehouse detail"
+    }
+  ],
+  "root_cause_analysis": {
+    "original_bug": "NameError: name 'create_audit_log' is not defined",
+    "location": "/app/backend/routes/shipment_routes.py line 82",
+    "cause": "create_audit_log and AuditAction were not imported but used in create_shipment endpoint",
+    "fix_applied": "Added to imports on line 11: 'from models.schemas import ..., create_audit_log' and line 12: 'from models.enums import ..., AuditAction'",
+    "impact": "All shipment CRUD operations (create, update, delete) were failing because they all call create_audit_log"
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_parcel_intake_bugfix.py",
+    "/app/test_reports/pytest/parcel_intake_bugfix_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "ParcelIntake.jsx table structure causes React hydration warnings - wrapping <tr> elements with <span> is invalid HTML. Consider using React.Fragment or removing wrapper spans."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_parcel_intake_bugfix.py"
+  ],
+  "success_rate": {
+    "backend": "100% (6/6 tests passed, 1 skipped due to trip creation dependency)",
+    "frontend": "100% - all flows tested working"
+  },
+  "seed_data_creation": "Created test session, tenant, user, and client with BUGFIX_ prefix - cleaned up after tests",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Parcel Intake bug fix verified. The missing imports in shipment_routes.py (create_audit_log from models.schemas, AuditAction from models.enums) have been added. All parcel CRUD operations now work correctly including: single/multiple parcel creation, piece creation with barcode, photo upload. Warehouse detail view shows photos correctly.",
+  "test_credentials": {
+    "email": "admin@servex.com",
+    "password": "Servex2026!"
+  }
+}

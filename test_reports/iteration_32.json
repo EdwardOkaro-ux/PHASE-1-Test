@@ -1,0 +1,75 @@
+{
+  "summary": "Tested Invoice Line Items display fixes and CSV Import/Export features. Backend: 12/12 tests passed. Frontend: All features verified working.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_csv_import_export_iter32.py",
+    "/app/test_reports/pytest/csv_import_export_iter32_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [
+    "/app/backend/tests/test_csv_import_export_iter32.py"
+  ],
+  "success_rate": {
+    "backend": "100%",
+    "frontend": "100%"
+  },
+  "test_credentials": {
+    "email": "admin@servex.com",
+    "password": "Servex2026!"
+  },
+  "seed_data_creation": "Used existing invoice and client data for testing",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "All features verified: Invoice line items display correctly with Qty=1, Weight with 2 decimals. CSV Import/Export working with correct headers. Parcel import preview modal shows client matching.",
+  "features_tested": {
+    "invoice_line_items_display": {
+      "qty_column": "PASS - Shows 1 for all items (not weight)",
+      "weight_column": "PASS - Shows weight with 2 decimals (e.g., 17.50 kg)",
+      "dimensions_column": "PASS - Shows '-' for legacy data without dimensions",
+      "amount_column": "PASS - Adequate width, shows amounts like R 1 116,00",
+      "table_headers": "PASS - ['Client', 'Recipient', 'Description', 'Dimensions', 'Qty', 'Weight', 'Rate', 'Amount']"
+    },
+    "client_csv_export": {
+      "endpoint": "PASS - GET /api/export/clients returns 200",
+      "content_type": "PASS - Returns text/csv",
+      "headers": "PASS - ['Client Name', 'Phone', 'Email', 'VAT No', 'Physical Address', 'Billing Address', 'Rate']",
+      "download_button": "PASS - Export Clients CSV button in Settings -> Data tab",
+      "toast_message": "PASS - Shows 'Clients exported successfully'"
+    },
+    "client_csv_import": {
+      "endpoint": "PASS - POST /api/import/clients accepts CSV upload",
+      "button": "PASS - Import Clients CSV button in Settings -> Data tab triggers file picker",
+      "preview_modal": "PASS - Shows preview with client count before import"
+    },
+    "parcel_csv_import": {
+      "endpoint": "PASS - POST /api/import/parcels accepts CSV upload",
+      "button": "PASS - Import Parcels CSV button in Settings -> Data tab",
+      "initial_modal": "PASS - Shows 'Import Parcels from CSV' dialog",
+      "target_warehouse": "PASS - Shows optional warehouse selector",
+      "expected_columns": "PASS - Lists 'Sent By, Primary Recipient, Secondary Recipient, Description, L, W, H, KG, QTY'",
+      "qty_creates_multiple": "PASS - QTY > 1 creates multiple parcels with sequence"
+    },
+    "settings_data_tab": {
+      "client_data_section": "PASS - Shows Import Clients and Export Clients cards",
+      "parcel_data_section": "PASS - Shows Import Parcels from CSV and Export All Data cards",
+      "danger_zone": "PASS - Shows Reset All Data with confirmation dialog"
+    },
+    "api_endpoints": {
+      "GET /api/export/clients": "PASS - 200, returns CSV with correct headers",
+      "POST /api/import/clients": "PASS - 200, imports clients and returns summary",
+      "POST /api/import/parcels": "PASS - 200, imports parcels with client auto-matching",
+      "GET /api/invoices-enhanced": "PASS - 200, returns invoice list",
+      "GET /api/invoices/{id}": "PASS - 200, returns invoice with line_items",
+      "GET /api/settings/currencies": "PASS - 200, returns currencies with exchange rates"
+    }
+  }
+}
